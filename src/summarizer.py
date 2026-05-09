@@ -13,8 +13,8 @@ SYSTEM_PROMPT = """\
   {
     "index": <入力と同じ0始まりの整数>,
     "importance": <1〜5の整数 (iOSエンジニア視点での重要度)>,
-    "summary": "<20字以内の一言サマリー>",
-    "reason": "<なぜ今話題か1文>"
+    "summary": "<記事の内容全体が把握できる2〜3文の要約。何が発表・変化したか、どんな技術的詳細があるか、iOSエンジニアにとって何が重要かを含めること>",
+    "reason": "<なぜ今話題か・業界への影響を1文で>"
   },
   ...
 ]
@@ -44,7 +44,7 @@ def summarize_articles(articles: list[Article]) -> list[SummarizedArticle]:
 
     message = client.messages.create(
         model="claude-haiku-4-5-20251001",
-        max_tokens=4096,
+        max_tokens=8192,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     )

@@ -16,9 +16,9 @@ def _format_article(a: SummarizedArticle) -> str:
     stars = STARS.get(a.importance, "★" * a.importance)
     link = _slack_link(a.article.url, a.article.title)
     return (
-        f"{stars} *{a.summary}*\n"
-        f"　{a.reason}\n"
-        f"　{link} _{a.article.source}_"
+        f"{stars} {link} _{a.article.source}_\n"
+        f"{a.summary}\n"
+        f"💡 {a.reason}"
     )
 
 

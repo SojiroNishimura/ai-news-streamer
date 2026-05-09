@@ -44,14 +44,18 @@ def _fetch_anthropic_articles() -> list[Article]:
     return articles
 
 
+def _is_valid_url(url: str) -> bool:
+    return url.startswith("http") and "." in url.split("/")[2] if url else False
+
+
 def fetch_rss_ai_articles() -> list[Article]:
     articles: list[Article] = []
     for source, url in RSS_FEEDS:
         feed = feedparser.parse(url)
         for entry in feed.entries[:20]:
             title = entry.get("title", "").strip()
-            link = entry.get("link", "")
-            if title and link:
+            link = entry.get("link", "").strip()
+            if title and _is_valid_url(link):
                 articles.append(Article(title=title, url=link, source=source))
 
     articles.extend(_fetch_anthropic_articles())
