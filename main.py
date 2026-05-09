@@ -26,7 +26,7 @@ async def main() -> None:
 
     print("[3/3] Slackに投稿中...")
     webhook_url = os.environ["SLACK_WEBHOOK_URL"]
-    post_to_slack(webhook_url, high_priority)
+    post_to_slack(webhook_url, high_priority, summarized)
 
 
 if __name__ == "__main__":
