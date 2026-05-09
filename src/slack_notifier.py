@@ -6,6 +6,22 @@ STARS = {1: "★☆☆☆☆", 2: "★★☆☆☆", 3: "★★★☆☆", 4: "�
 TOP_N = 5
 
 
+def _slack_link(url: str, title: str) -> str:
+    # Slackのリンク形式 <url|text> はテキスト部分に | < > を含めると壊れる
+    safe_title = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("|", "｜")
+    return f"<{url}|{safe_title}>"
+
+
+def _format_article(a: SummarizedArticle) -> str:
+    stars = STARS.get(a.importance, "★" * a.importance)
+    link = _slack_link(a.article.url, a.article.title)
+    return (
+        f"{stars} *{a.summary}*\n"
+        f"　{a.reason}\n"
+        f"　{link} _{a.article.source}_"
+    )
+
+
 def _format_message(
     high_priority: list[SummarizedArticle],
     all_summarized: list[SummarizedArticle],
@@ -19,19 +35,13 @@ def _format_message(
     if high_priority:
         lines.append("*📌 注目記事 (★4以上)*")
         for a in sorted(high_priority, key=lambda x: x.importance, reverse=True):
-            stars = STARS.get(a.importance, "★" * a.importance)
-            lines.append(
-                f"{stars} *{a.summary}*\n"
-                f"　{a.reason}\n"
-                f"　<{a.article.url}|{a.article.title}> _{a.article.source}_"
-            )
+            lines.append(_format_article(a))
         lines.append("")
 
     top5 = sorted(all_summarized, key=lambda x: x.importance, reverse=True)[:TOP_N]
     lines.append(f"*📊 スコア上位{TOP_N}件*")
     for a in top5:
-        stars = STARS.get(a.importance, "★" * a.importance)
-        lines.append(f"{stars} <{a.article.url}|{a.article.title}> _{a.article.source}_")
+        lines.append(_format_article(a))
 
     return "\n".join(lines)
 
